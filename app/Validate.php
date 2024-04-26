@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/LoadEnv.php';
-// use GuzzleHttp\Client;
+use GuzzleHttp\Client;
 
 /**
  * Class for performing various Validations.
@@ -37,23 +37,23 @@ class Validate {
       $this->emailError = 'Invalid Email address format!';
       return FALSE;
     }
-    // LoadEnv::loadDotEnv();
-    // $client = new Client();
-    // $access_key = $_ENV['ACCESS_KEY'];
-    // $response = $client->request('GET', 'https://emailvalidation.abstractapi.com/v1/?api_key=' . $access_key . '&email=' . $email);
-    // // Stores the response received in the form of an array.
-    // $data = json_decode($response->getBody(), TRUE);
-    // if ($data["is_disposable_email"]["value"]) {
-    //   $this->emailError = 'Cannot use temporary Email address!';
-    //   return FALSE;
-    // } 
-    // elseif ($data['deliverability'] === 'UNDELIVERABLE') {
-    //   $this->emailError = 'Email address does not exists!';
-    //   return FALSE;
-    // } 
-    // else {
+    LoadEnv::loadDotEnv();
+    $client = new Client();
+    $access_key = $_ENV['ACCESS_KEY'];
+    $response = $client->request('GET', 'https://emailvalidation.abstractapi.com/v1/?api_key=' . $access_key . '&email=' . $email);
+    // Stores the response received in the form of an array.
+    $data = json_decode($response->getBody(), TRUE);
+    if ($data["is_disposable_email"]["value"]) {
+      $this->emailError = 'Cannot use temporary Email address!';
+      return FALSE;
+    } 
+    elseif ($data['deliverability'] === 'UNDELIVERABLE') {
+      $this->emailError = 'Email address does not exists!';
+      return FALSE;
+    } 
+    else {
       return TRUE;
-    // }
+    }
   }
 
   /**

@@ -7,7 +7,6 @@ $linked_in = new LinkedInAPIv2();
 if (isset($url['query'])) {
   $query = $url['query'];
 }
-// var_dump(http_response_code());
 switch ($path) {
   case '/':
   case '/index':
@@ -29,8 +28,8 @@ switch ($path) {
   case '/logout':
     require __DIR__ . '/Logout.php';
     break;
-  case '/profile':
-    require __DIR__ . '/Profile.php';
+  case '/stocks-entry':
+    require __DIR__ . '/StocksEntry.php';
     break;
   default:
     require __DIR__ . '/404.php';

@@ -31,7 +31,7 @@ class DeleteQuery extends ConnectDB{
    */
   public function removeStock(int $user_id, int $s_id) {
     $conn = $this->conn;
-    $stmt = $conn->prepare('DELETE FROM Stocks WHERE s_id = :post_id AND user_id = :user_id;');
+    $stmt = $conn->prepare('DELETE FROM Stocks WHERE s_id = :s_id AND user_id = :user_id;');
     $stmt->execute([
       's_id' => $s_id,
       'user_id' => $user_id

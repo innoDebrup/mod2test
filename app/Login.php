@@ -17,6 +17,8 @@
       if (password_verify($password, $password_hash)) {
         header('Location: /home');
         session_start();
+        $id = $read->getID($user_mail);
+        $_SESSION['user_id'] = $id;
         $_SESSION['user_mail'] = $user_mail;
       }
       else {

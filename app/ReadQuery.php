@@ -120,178 +120,36 @@ class ReadQuery extends ConnectDB {
     $password = $result['password'];
     return $password;
   }
-
   /**
-   * Retrieves the user_id of the user for further processing.
+   * Function to get the user_id of a given account.
    *
-   * @param string $usermail
-   *  Username or Email of the user.
+   * @param string $user_mail
+   *  Email of the account whose password needs to be fetched.
+   * 
+   * @return string
+   *  Returns the user_id in string format.
+   */
+  public function getID(string $user_mail) {
+    $conn = $this->conn;
+    $stmt = $conn->prepare("SELECT * FROM Users WHERE user_name = :user_mail OR email = :user_mail;");
+    $stmt->execute([
+      'user_mail' => $user_mail
+    ]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $user_id = $result['user_id'];
+    return $user_id;
+  }
+  /**
+   * Function to get the stocks.
    * 
    * @return mixed
+   *  Returns associative array or FALSE incase of failure.
    */
-  public function getUserInfo(string $usermail) {
+  public function getStocks() {
     $conn = $this->conn;
-    $stmt = $conn->prepare("SELECT user_id, user_name, email FROM Users WHERE user_name = :usermail OR email = :usermail;");
-    $stmt->execute([
-      'usermail' => $usermail
-    ]);
-    $result_arr = $stmt->fetch(PDO::FETCH_ASSOC);
-    return $result_arr;
-  }
-
-  /**
-   * Function to retrieve User Details of the given user.
-   *
-   * @param int $user_id
-   *  User_ID of the required user.
-   * 
-   * @return mixed
-   */
-  public function getUserDetails(int $user_id) {
-    $conn = $this->conn;
-    $stmt = $conn->prepare("SELECT * FROM UserDetails WHERE user_id = :userid ;");
-    $stmt->execute([
-      'userid' => $user_id
-    ]);
-    $result_arr = $stmt->fetch(PDO::FETCH_ASSOC);
-    return $result_arr;
-  }
-
-  /**
-   * Function to get the post contents.
-   *
-   * @param integer $limit
-   *  Limit to set the max no. of rows to show.
-   * @param integer $offset
-   *  Initial offset to start the selection.
-   * 
-   * @return array
-   */
-  public function getPosts(int $limit, int $offset) {
-    $conn = $this->conn;
-    $stmt = $conn->prepare("SELECT 
-        u.user_name, 
-        profile_pic, 
-        post_id, 
-        content, 
-        media,
-        media_type, 
-        likes,
-        time 
-      FROM 
-        Posts p 
-      JOIN 
-        Users u 
-      ON 
-        p.user_id = u.user_id 
-      JOIN
-        UserDetails ud
-      ON
-        u.user_id = ud.user_id 
-      ORDER BY 
-        time
-      DESC 
-      LIMIT 
-        $limit
-      OFFSET 
-        $offset ;");
+    $stmt = $conn->prepare("SELECT s_id, s.user_id, u.user_name, stock_name, stock_price, time_created, time_edited  FROM Stocks s JOIN Users u ON s.user_id = u.user_id;");
     $stmt->execute();
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
     return $result;
-  }
-
-  /**
-   * Function to obtain the total no. of likes of a post.
-   *
-   * @param int $post_id
-   *  The post_id of the post.
-   * 
-   * @return int
-   *  Total no. of likes are returned.
-   */
-  public function getTotalLikes(int $post_id) {
-    $conn = $this->conn;
-    $stmt = $conn->prepare('SELECT likes FROM Posts WHERE post_id = :post_id;');
-    $stmt->execute([
-      'post_id' => $post_id
-    ]);
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
-    return $result['likes'];
-  }
-
-  /**
-   * Function to checked which posts a user has liked.
-   *
-   * @param integer $user_id
-   *  User_id of the user.
-   * 
-   * @return array|false
-   *  Returns array of rows selected OR FALSE if no suitable rows are present.
-   */
-  public function Liked(int $user_id) {
-    $conn = $this->conn;
-    $stmt = $conn->prepare("SELECT post_id FROM Likes WHERE user_id = :user_id;");
-    $stmt->execute([
-      'user_id'=>$user_id
-    ]);
-    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    return $result;
-  }
-
-  /**
-   * Function to get all the comments of a post.
-   *
-   * @param integer $post_id
-   *  Post_id of the post whose comments are to be loaded.
-   * 
-   * @return array
-   */
-  public function getComments(int $post_id) {
-    $conn = $this->conn;
-    $stmt = $conn->prepare("SELECT 
-        u.user_name, 
-        profile_pic, 
-        post_id, 
-        comment
-      FROM 
-        Comments c 
-      JOIN 
-        Users u 
-      ON 
-        c.user_id = u.user_id 
-      JOIN
-        UserDetails ud
-      ON
-        u.user_id = ud.user_id 
-      WHERE 
-        c.post_id = :post_id
-      ORDER BY
-        c_id
-      DESC;
-    ");
-    $stmt->execute([
-      'post_id'=>$post_id
-    ]);
-    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    return $result;
-  }
-
-  /**
-   * Function to obtain the total no. of comments on a post.
-   *
-   * @param int $post_id
-   *  The post_id of the post.
-   * 
-   * @return int
-   *  Total no. of comments are returned.
-   */
-  public function getTotalComments(int $post_id) {
-    $conn = $this->conn;
-    $stmt = $conn->prepare('SELECT COUNT(*) AS total_comments FROM Comments WHERE post_id = :post_id;');
-    $stmt->execute([
-      'post_id' => $post_id
-    ]);
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
-    return $result['total_comments'];
   }
 }

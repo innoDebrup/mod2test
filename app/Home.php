@@ -1,6 +1,13 @@
 <?php
-require '../controller/LoginChecker.php';
-require '../controller/PostProcess.php';
+require __DIR__ . '/LoginChecker.php';
+require __DIR__ . '/QueryCall.php';
+
+$stocks_arr = $read->getStocks();
+if($_SERVER['REQUEST_METHOD'] == 'POST') {
+  $delete->removeStock($_POST['u_id'],$_POST['s_id']);
+  header('Location: /home');
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -10,12 +17,12 @@ require '../controller/PostProcess.php';
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Home</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+  <link rel="stylesheet" href="/CSS/home.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <!-- Unicons CSS -->
   <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
-  <link rel="stylesheet" href="/CSS/style.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-  <script src="/JS/home.js" ></script>
+  <script src="/JS/home.js"></script>
 </head>
 
 <body>
@@ -39,43 +46,36 @@ require '../controller/PostProcess.php';
       </div>
     </div>
     <div class="nav-links">
-      <div><a href="/Profile">Profile</a></div>
-      <div><a href="/Logout">Logout</a></div>
+      <div><a href="/stocks-entry">Add Stock</a></div>
+      <div><a href="/logout">Logout</a></div>
     </div>
   </nav>
-  <div class="post-container">
-    <h2>Create a Post</h2>
-    <form action="/Home" method="post" enctype="multipart/form-data">
-      <div class="form-group">
-        <label for="content">Write something:</label>
-        <textarea id="post-text" name="content" rows="4" cols="50"></textarea>
-      </div>
-      <div class="form-group">
-        <label for="media">Upload an image:</label>
-        <input type="file" id="post-image" name="media">
-      </div>
-      <button type="submit">Post</button>
-    </form>
-    <div id = 'post-error'>
-      <h3><?php echo $post_err_msg; ?></h3>
-    </div>
-  </div>
-  <div>
-    <form>
-      <input type="text" name="hiddenid" value="<?php echo $user_id?>" id="user-id" hidden>
-    </form>
-  </div>
   <div class="container">
-    <h2 id="top-posts-header">Recent Posts</h2>
+    <h2 id="top-posts-header">All Stocks</h2>
     <div class="posts-display">
-      <?php foreach($post_arr as $post): ?>
-        <?php require '../view/PostDisplay.php'; ?>
-      <?php endforeach; ?>
+      <div>
+        <div>
+          <table>
+            <thead>
+              <tr>
+                <th>Stock Name</th>
+                <th>Stock Price</th>
+                <th>User Name</th>
+                <th>Date Added</th>
+                <th>Last Edited</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php foreach ($stocks_arr as $stock) : ?>
+                <?php require __DIR__ . '/StocksDisplay.php'; ?>
+              <?php endforeach; ?>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <div id="loaded-content"></div>
       <div id="load-message"></div>
-      <div class="btn-con">
-        <button id="more">See more</button>
-      </div>
     </div>
   </div>
   <div id="debug"></div>

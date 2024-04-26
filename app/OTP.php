@@ -1,11 +1,9 @@
 <?php
-require_once '/vendor/autoload.php';
-
-use Dotenv\Dotenv;
+require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/LoadEnv.php';
 use PHPMailer\PHPMailer\PHPMailer;
+use GuzzleHttp\Client;
 
-$dotenv = Dotenv::createImmutable('/var/www/mvc/app/core/');
-$dotenv->load();
 /**
  * Class for generating and sending OTP.
  */
@@ -26,6 +24,7 @@ class OTP {
    *  Return the OTP generated.
    */
   public function sendOTP(string $email ,string $otp) {
+    LoadEnv::loadDotEnv();
     $mail = new PHPMailer(TRUE);
     $mail->isSMTP();
     // Setting the sender mail configuration.
@@ -69,22 +68,23 @@ class OTP {
       $this->emailError = 'Invalid Email address format!';
       return FALSE;
     }
-    // $client = new Client();
-    // $access_key = $_ENV['ACCESS_KEY'];
-    // $response = $client->request('GET', 'https://emailvalidation.abstractapi.com/v1/?api_key=' . $access_key . '&email=' . $email);
-    // // Stores the response received in the form of an array.
-    // $data = json_decode($response->getBody(), TRUE);
-    // if ($data["is_disposable_email"]["value"]) {
-    //   $this->emailError = 'Cannot use temporary Email address!';
-    //   return FALSE;
-    // } 
-    // elseif ($data['deliverability'] === 'UNDELIVERABLE') {
-    //   $this->emailError = 'Email address does not exists!';
-    //   return FALSE;
-    // } 
-    // else {
+    LoadEnv::loadDotEnv();
+    $client = new Client();
+    $access_key = $_ENV['ACCESS_KEY'];
+    $response = $client->request('GET', 'https://emailvalidation.abstractapi.com/v1/?api_key=' . $access_key . '&email=' . $email);
+    // Stores the response received in the form of an array.
+    $data = json_decode($response->getBody(), TRUE);
+    if ($data["is_disposable_email"]["value"]) {
+      $this->emailError = 'Cannot use temporary Email address!';
+      return FALSE;
+    } 
+    elseif ($data['deliverability'] === 'UNDELIVERABLE') {
+      $this->emailError = 'Email address does not exists!';
+      return FALSE;
+    } 
+    else {
       return TRUE;
-    // }
+    }
   }
   /**
    * Function to check if the email is already present in the database or not.
@@ -95,7 +95,7 @@ class OTP {
    *  TRUE if email exists or FALSE if email does not exists in the table.
    */
   public function checkDuplicate (string $email) {
-    require '../../model/QueryCall.php';
+    require __DIR__ . '/QueryCall.php';
     return $read->checkEmail($email);
   }  
 }

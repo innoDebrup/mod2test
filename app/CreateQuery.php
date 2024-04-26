@@ -43,17 +43,15 @@ class CreateQuery extends ConnectDB {
   }
 
   /**
-   * Function to insert a new stock to the post database.
+   * Function to add stock into the Stocks table.
    *
    * @param integer $user_id
-   *  User-id of the user.
-   * @param string $content
-   *  Text content of the post.
-   * @param string $media
-   *  Media content in the post.
-   * @param string $media_type
-   *  Media type of the media in the post.
-   * 
+   *   User-id of the uploader.
+   * @param string $stock_name
+   *   Stock name of the stock.
+   * @param integer $stock_price
+   *   Price of the stock.
+   *  
    * @return void
    */
   public function addStock(int $user_id, string $stock_name, int $stock_price) {
