@@ -1,0 +1,9 @@
+{
+    "require": {
+        "vlucas/phpdotenv": "^5.6",
+        "guzzlehttp/guzzle": "^7.8",
+        "phpmailer/phpmailer": "^6.9",
+        "hybridauth/hybridauth": "^3.11",
+        "firebase/php-jwt": "^6.10"
+    }
+}
